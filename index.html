@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CHAS Ward Assessment — KCPH</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1565C0;--blue-dk:#0D47A1;--blue-light:#E3F0FD;--blue-mid:#4A90D9;
+  --green:#2E7D32;--teal:#00695C;--teal-dk:#004D40;--teal-light:#E0F2F1;
+  --amber:#E65100;--red:#C62828;
+  --gray:#455A64;--gray-light:#ECEFF1;--gray-border:#CFD8DC;
+  --white:#FFFFFF;--bg:#F4F6F9;--text:#263238;--text-muted:#607D8B;
+  --radius:8px;--shadow:0 2px 8px rgba(0,0,0,0.1);
+  --font:'Segoe UI',system-ui,sans-serif;
+  --pc:#1565C0;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+h1,h2,h3,h4{font-weight:600;line-height:1.3}
+.app-header{background:var(--pc);color:#fff;transition:background 0.3s}
+.header-inner{max-width:1100px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.header-logo{width:44px;height:44px;background:rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.header-text h1{font-size:17px;font-weight:700;margin-bottom:1px}
+.header-text p{font-size:11px;opacity:0.82}
+.header-nav{margin-left:auto;display:flex;gap:6px}
+.nav-btn{padding:7px 15px;border:1.5px solid rgba(255,255,255,0.45);border-radius:var(--radius);background:transparent;color:#fff;cursor:pointer;font-size:12px;font-weight:500;transition:all 0.15s}
+.nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,0.2);border-color:#fff}
+.phase-bar{background:rgba(0,0,0,0.18);border-top:1px solid rgba(255,255,255,0.12)}
+.phase-bar-inner{max-width:1100px;margin:0 auto;padding:8px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.phase-bar-inner span{font-size:12px;opacity:0.85;margin-right:4px}
+.phase-toggle{display:flex;background:rgba(0,0,0,0.25);border-radius:20px;padding:3px;gap:2px}
+.phase-opt{padding:5px 18px;border-radius:16px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);transition:all 0.2s;color:rgba(255,255,255,0.7);background:transparent}
+.phase-opt.active{background:#fff;color:var(--pc)}
+.phase-info{font-size:11px;opacity:0.8;margin-left:auto}
+.container{max-width:1100px;margin:0 auto;padding:22px}
+.page{display:none}
+.page.active{display:block}
+.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.card-header{padding:13px 18px;background:var(--gray-light);border-bottom:1px solid var(--gray-border);display:flex;align-items:center;gap:10px}
+.card-header h3{font-size:14px;font-weight:600;color:var(--text);flex:1}
+.card-body{padding:18px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px;margin-bottom:13px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em}
+.form-group input,.form-group select,.form-group textarea{padding:9px 12px;border:1.5px solid var(--gray-border);border-radius:var(--radius);font-size:13px;font-family:var(--font);background:var(--white);color:var(--text);transition:border-color 0.15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--pc)}
+.form-group textarea{resize:vertical;min-height:68px}
+.ward-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:16px}
+.ward-card{border:2px solid var(--gray-border);border-radius:var(--radius);padding:11px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--white)}
+.ward-card:hover{border-color:var(--blue-mid);background:var(--blue-light)}
+.ward-card.selected{border-color:var(--pc);background:var(--blue-light)}
+.ward-card .ward-icon{font-size:22px;margin-bottom:5px}
+.ward-card .ward-name{font-size:12px;font-weight:600;color:var(--text)}
+.ward-card.selected .ward-name{color:var(--pc)}
+.std-section{margin-bottom:10px;border:1px solid var(--gray-border);border-radius:var(--radius);overflow:hidden}
+.std-header{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--gray-light);cursor:pointer;user-select:none}
+.std-code{color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0}
+.std-code.p1{background:#1565C0}
+.std-code.p2{background:#00695C}
+.std-title{font-size:13px;font-weight:600;flex:1}
+.std-progress{font-size:12px;color:var(--text-muted);margin-left:auto;white-space:nowrap}
+.std-body{display:block}
+.std-body.collapsed{display:none}
+.col-header{display:grid;grid-template-columns:1fr 160px 1fr;padding:6px 13px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid}
+.col-header.p1{background:#E3F0FD;color:#1565C0;border-color:#BBDEFB}
+.col-header.p2{background:#E0F2F1;color:#00695C;border-color:#B2DFDB}
+.crit-row{display:grid;grid-template-columns:1fr 160px 1fr;border-bottom:1px solid var(--gray-border);transition:background 0.1s}
+.crit-row:last-child{border-bottom:none}
+.crit-row:hover{background:#FAFBFC}
+.crit-text{padding:10px 13px;font-size:13px;line-height:1.5;border-right:1px solid var(--gray-border)}
+.crit-score{padding:9px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-right:1px solid var(--gray-border)}
+.score-row{display:flex;gap:4px}
+.score-btn{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--gray-border);cursor:pointer;font-size:13px;font-weight:700;background:var(--white);transition:all 0.12s;display:flex;align-items:center;justify-content:center}
+.score-btn:hover{transform:scale(1.08)}
+.score-btn.s0.active{background:#FFCDD2;border-color:#E53935;color:#B71C1C}
+.score-btn.s1.active{background:#FFF9C4;border-color:#F9A825;color:#E65100}
+.score-btn.s2.active{background:#C8E6C9;border-color:#43A047;color:#1B5E20}
+.score-label{font-size:10px;color:var(--text-muted);text-align:center;min-height:14px}
+.crit-note{padding:8px 10px}
+.crit-note textarea{width:100%;font-size:12px;border:1px solid var(--gray-border);border-radius:6px;padding:6px 8px;resize:none;height:54px;font-family:var(--font);color:var(--text)}
+.crit-note textarea:focus{outline:none;border-color:var(--pc)}
+.score-bar{position:sticky;bottom:0;background:var(--white);border-top:2px solid var(--pc);padding:10px 0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;transition:border-color 0.3s}
+.score-stat{text-align:center;padding:6px 13px;background:var(--gray-light);border-radius:var(--radius);min-width:78px}
+.score-stat .sv{font-size:19px;font-weight:700;color:var(--text)}
+.score-stat .sl{font-size:11px;color:var(--text-muted)}
+.grade-badge{font-size:19px;font-weight:800;padding:5px 16px;border-radius:var(--radius)}
+.grade-A{background:#C8E6C9;color:#1B5E20}.grade-B{background:#BBDEFB;color:#0D47A1}
+.grade-C{background:#FFF9C4;color:#E65100}.grade-D{background:#FFCDD2;color:#B71C1C}
+.progress-wrap{flex:1;min-width:130px}
+.prog-label{font-size:11px;color:var(--text-muted);margin-bottom:3px}
+.prog-outer{height:9px;background:var(--gray-light);border-radius:5px;overflow:hidden}
+.prog-inner{height:9px;border-radius:5px;transition:width 0.3s,background 0.3s}
+.btn{padding:9px 20px;border:none;border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font);transition:all 0.15s;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue-dk)}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#1B5E20}
+.btn-outline{background:transparent;border:1.5px solid var(--gray-border);color:var(--text)}.btn-outline:hover{background:var(--gray-light)}
+.btn-sm{padding:5px 13px;font-size:12px}.btn:disabled{opacity:0.5;cursor:not-allowed}
+.btn-group{display:flex;gap:9px;flex-wrap:wrap}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#263238;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{background:var(--green)}#toast.error{background:var(--red)}
+.records-filter{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.records-filter select,.records-filter input{padding:7px 11px;border:1.5px solid var(--gray-border);border-radius:var(--radius);font-size:13px;font-family:var(--font);background:var(--white);color:var(--text)}
+.records-table{width:100%;border-collapse:collapse;font-size:13px}
+.records-table th{background:var(--blue);color:#fff;padding:9px 12px;text-align:left;font-weight:600;white-space:nowrap}
+.records-table td{padding:9px 12px;border-bottom:1px solid var(--gray-border);vertical-align:middle}
+.records-table tr:hover td{background:#F5F9FF}
+.badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-A{background:#C8E6C9;color:#1B5E20}.badge-B{background:#BBDEFB;color:#0D47A1}
+.badge-C{background:#FFF9C4;color:#E65100}.badge-D{background:#FFCDD2;color:#B71C1C}
+.badge-ward{background:#E8EAF6;color:#3949AB}
+.badge-p1{background:#E3F0FD;color:#1565C0}.badge-p2{background:#E0F2F1;color:#004D40}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media print{
+  body{background:#fff;font-size:10.5pt}
+  .app-header,.phase-bar,.score-bar,.btn,.btn-group,.nav-btn,#toast,.no-print,.records-filter{display:none!important}
+  .container{padding:0;max-width:100%}
+  .page{display:none!important}
+  #page-report{display:block!important}
+  @page{margin:15mm 12mm}
+}
+#reportOutput{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-border)}
+.rpt-cover{padding:36px 44px 32px;border-radius:var(--radius) var(--radius) 0 0}
+.rpt-cover-p1{background:linear-gradient(135deg,#1565C0 0%,#0D47A1 60%,#283593 100%);color:#fff}
+.rpt-cover-p2{background:linear-gradient(135deg,#00695C 0%,#004D40 60%,#1B5E20 100%);color:#fff}
+.rpt-cover .hosp-name{font-size:12px;font-weight:600;opacity:0.82;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px}
+.rpt-cover h1{font-size:24px;font-weight:800;margin-bottom:6px}
+.rpt-cover .rpt-sub{font-size:13px;opacity:0.78}
+.rpt-phase-tag{display:inline-block;background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.35);border-radius:12px;padding:3px 12px;font-size:11px;font-weight:700;margin-bottom:10px}
+.rpt-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--gray-border)}
+.rpt-meta-cell{background:var(--white);padding:13px 17px}
+.rpt-meta-cell .mk{font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px}
+.rpt-meta-cell .mv{font-size:13px;font-weight:600;color:var(--text)}
+.rpt-section{padding:22px 30px;border-bottom:1px solid var(--gray-border)}
+.rpt-section:last-child{border-bottom:none}
+.rpt-section h2{font-size:14px;font-weight:700;margin-bottom:13px;padding-bottom:5px;border-bottom:2px solid}
+.rpt-section-p1 h2{color:#1565C0;border-color:#BBDEFB}
+.rpt-section-p2 h2{color:#00695C;border-color:#B2DFDB}
+.summary-scores{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
+.sum-card{border:1px solid var(--gray-border);border-radius:var(--radius);padding:13px;text-align:center}
+.sum-card .sc-val{font-size:26px;font-weight:800}
+.sum-card .sc-label{font-size:11px;color:var(--text-muted);margin-top:3px}
+.sum-card .sc-pct{font-size:15px;font-weight:700;margin-top:2px}
+.grade-display{font-size:44px;font-weight:900;text-align:center;padding:10px}
+.rpt-std-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:13px}
+.rpt-std-table th{padding:7px 10px;text-align:left;font-weight:700;border:1px solid}
+.rpt-std-table-p1 th{background:#E8EAF6;color:#283593;border-color:#C5CAE9}
+.rpt-std-table-p2 th{background:#E0F2F1;color:#004D40;border-color:#B2DFDB}
+.rpt-std-table td{padding:7px 10px;border:1px solid var(--gray-border);vertical-align:top;line-height:1.45}
+.rpt-std-table tr:nth-child(even) td{background:#FAFAFA}
+.score-pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.pill-0{background:#FFCDD2;color:#B71C1C}.pill-1{background:#FFF9C4;color:#E65100}
+.pill-2{background:#C8E6C9;color:#1B5E20}.pill-na{background:#ECEFF1;color:#607D8B}
+.pct-bar-wrap{margin:5px 0;height:7px;background:var(--gray-light);border-radius:4px;overflow:hidden}
+.pct-bar-fill{height:7px;border-radius:4px}
+.findings-box{border-left:4px solid #FFA000;background:#FFF8E1;border-radius:0 var(--radius) var(--radius) 0;padding:11px 15px;margin-bottom:9px;font-size:12px}
+.findings-box.critical{background:#FFEBEE;border-left-color:#E53935}
+.findings-box h4{font-size:12px;font-weight:700;margin-bottom:4px}
+.rpt-footer{background:var(--gray-light);padding:18px 30px;border-radius:0 0 var(--radius) var(--radius);display:flex;gap:36px;flex-wrap:wrap}
+.sig-block{flex:1;min-width:165px}
+.sig-block .sig-role{font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-bottom:28px}
+.sig-block .sig-line{border-top:1.5px solid var(--text);margin-bottom:4px}
+.sig-block .sig-name{font-size:12px;font-weight:600}
+.sig-block .sig-title{font-size:11px;color:var(--text-muted)}
+.page-break{page-break-before:always}
+</style>
+</head>
+<body>
+<header class="app-header" id="appHeader">
+  <div class="header-inner">
+    <div class="header-logo">&#127973;</div>
+    <div class="header-text">
+      <h1>CHAS Ward Assessment Tool</h1>
+      <p>Kampong Chhnang Provincial Hospital &nbsp;&middot;&nbsp; Finance Committee</p>
+    </div>
+    <nav class="header-nav no-print">
+      <button class="nav-btn active" id="nav-form"    onclick="showPage('form')">&#128203; Assessment</button>
+      <button class="nav-btn"        id="nav-records" onclick="showPage('records')">&#128194; Records</button>
+      <button class="nav-btn"        id="nav-report"  onclick="showPage('report')">&#128202; Report</button>
+    </nav>
+  </div>
+  <div class="phase-bar">
+    <div class="phase-bar-inner">
+      <span>Assessment Phase:</span>
+      <div class="phase-toggle">
+        <button class="phase-opt active" id="phaseBtn1" onclick="switchPhase(1)">Phase 1 &mdash; Foundation</button>
+        <button class="phase-opt"        id="phaseBtn2" onclick="switchPhase(2)">Phase 2 &mdash; Comprehensive</button>
+      </div>
+      <div class="phase-info" id="phaseInfo">20 measurable elements across 7 standards</div>
+    </div>
+  </div>
+</header>
+<div id="toast"></div>
+
+<!-- PAGE 1: FORM -->
+<div id="page-form" class="page active">
+<div class="container">
+  <div id="phaseBanner" class="card" style="border-left:4px solid #1565C0">
+    <div class="card-body" style="padding:13px 18px;display:flex;align-items:center;gap:12px">
+      <div id="phaseBannerIcon" style="font-size:26px">&#127807;</div>
+      <div>
+        <div id="phaseBannerTitle" style="font-size:14px;font-weight:700;color:#1565C0">Phase 1 &mdash; Foundation Assessment</div>
+        <div id="phaseBannerDesc" style="font-size:12px;color:var(--text-muted);margin-top:2px">Focused on the most observable and measurable elements. Designed for first-round assessment comfort for both assessors and ward staff.</div>
+      </div>
+      <div style="margin-left:auto;text-align:center;background:var(--gray-light);border-radius:var(--radius);padding:8px 14px;flex-shrink:0">
+        <div style="font-size:20px;font-weight:800;color:#1565C0" id="phaseCritCount">20</div>
+        <div style="font-size:11px;color:var(--text-muted)">criteria</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span>&#128221;</span><h3>Assessment Information</h3></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Assessment Date</label><input type="date" id="assessmentDate"/></div>
+        <div class="form-group"><label>Assessor Name</label>
+          <select id="assessorName">
+            <option value="">&#8212; Select assessor &#8212;</option>
+            <option>Dr. Vorn Theavy</option><option>Dr. Khon Oudomvichet</option>
+            <option>Dr. Yeap Kong</option><option>Dr. Lors Polaing</option>
+            <option>Dr. Khim Sokharin</option><option>Mr. Dy Phearak</option>
+            <option>Dr. Touch Manith</option><option>Mrs. Som Vorleak</option>
+            <option>Mrs. Sar Nita</option><option>Dr. Siv Punnreay</option>
+            <option>MA. Khim Chanthou</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Role / Title</label>
+          <select id="assessorRole">
+            <option value="">&#8212; Select role &#8212;</option>
+            <option>Committee Chair</option><option>Vice Chairman</option>
+            <option>Committee Member</option><option>Technical Officer</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span>&#127973;</span><h3>Select Ward to Assess</h3></div>
+    <div class="card-body"><div class="ward-grid" id="wardGrid"></div></div>
+  </div>
+  <div id="standardsArea" style="display:none">
+    <div id="standardsList"></div>
+    <div class="card">
+      <div class="card-header"><span>&#128172;</span><h3>Overall Remarks</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <textarea id="overallRemarks" rows="3" placeholder="General observations, strengths, recommendations for this ward&#8230;"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="btn-group no-print" style="margin-bottom:20px">
+      <button class="btn btn-success" id="btnSubmit" onclick="submitAssessment()">&#128190; Save Assessment</button>
+      <button class="btn btn-outline" onclick="clearForm()">&#128260; Clear Form</button>
+    </div>
+  </div>
+  <div class="score-bar no-print" id="scoreBar" style="display:none">
+    <div class="score-stat"><div class="sv" id="barScore">0/0</div><div class="sl">Score</div></div>
+    <div class="score-stat"><div class="sv" id="barPct">&#8212;</div><div class="sl">Percent</div></div>
+    <div class="score-stat" style="padding:5px 11px">
+      <div class="grade-badge" id="barGrade">&#8212;</div>
+      <div class="sl" style="margin-top:2px">Grade</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="prog-label" id="barProgTxt">0 of 0 criteria scored</div>
+      <div class="prog-outer"><div class="prog-inner" id="barProg" style="width:0%;background:#1565C0"></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE 2: RECORDS -->
+<div id="page-records" class="page">
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <span>&#128194;</span><h3>Saved Assessment Records</h3>
+      <button class="btn btn-outline btn-sm no-print" style="margin-left:auto" onclick="loadRecords()">&#128260; Refresh</button>
+    </div>
+    <div class="card-body">
+      <div class="records-filter no-print">
+        <select id="filterPhase" onchange="filterRecords()">
+          <option value="">All Phases</option>
+          <option value="Phase 1">Phase 1 &#8212; Foundation</option>
+          <option value="Phase 2">Phase 2 &#8212; Comprehensive</option>
+        </select>
+        <select id="filterWard" onchange="filterRecords()">
+          <option value="">All Wards</option>
+          <option>General Medicine</option><option>ICU</option><option>Pediatric</option>
+          <option>Operation Theater</option><option>Maternity</option><option>OPD</option>
+        </select>
+        <input type="text" id="filterSearch" placeholder="Search by assessor or ID&#8230;" oninput="filterRecords()" style="min-width:200px"/>
+      </div>
+      <div style="overflow-x:auto">
+        <div id="recordsTable" style="color:var(--text-muted);text-align:center;padding:20px">Click Refresh to load records.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE 3: REPORT -->
+<div id="page-report" class="page">
+<div class="container">
+  <div class="btn-group no-print" style="margin-bottom:16px">
+    <button class="btn btn-primary" onclick="window.print()">&#128424; Print / Save as PDF</button>
+    <button class="btn btn-outline" onclick="showPage('records')">&#8592; Back to Records</button>
+  </div>
+  <div id="reportOutput"><div style="padding:40px;text-align:center;color:var(--text-muted)">Select an assessment from Records to view its report.</div></div>
+</div>
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyzSVNIkMJdPYbYr9QcppwjqOsYI9AE-oxzvAA8wAhd8GgzG3nqonuERIvibPVxvehI/exec';
+
+// ── PHASE 1: FOUNDATION (20 criteria across 7 standards) ──────────
+const STANDARDS_P1 = [
+  {code:'PCC.1',title:'Patient Rights & Consent',criteria:[
+    {id:'p1_pcc1a',text:'Patient rights are posted visibly in the ward (Khmer language)'},
+    {id:'p1_pcc1b',text:'Written informed consent is obtained and filed before invasive procedures'},
+    {id:'p1_pcc1c',text:'A complaint / feedback mechanism is available and known to ward staff'},
+  ]},
+  {code:'PCC.2',title:'Patient Assessment & Care',criteria:[
+    {id:'p1_pcc2a',text:'Initial patient assessment is documented within the required timeframe on admission'},
+    {id:'p1_pcc2b',text:'Vital signs and nursing notes are recorded at required intervals'},
+    {id:'p1_pcc2c',text:'Care plans are written, individualized, and include treatment goals'},
+  ]},
+  {code:'IPC.1',title:'Infection Prevention & Control',criteria:[
+    {id:'p1_ipc1a',text:'Hand hygiene facilities (water + soap or alcohol rub) are available at point of care'},
+    {id:'p1_ipc1b',text:'Staff are observed practicing hand hygiene at appropriate moments (WHO 5 Moments)'},
+    {id:'p1_ipc1c',text:'PPE (gloves, mask) is available, used correctly, and disposed of properly'},
+    {id:'p1_ipc1d',text:'Waste bins are segregated (sharps, infectious, general) and not overfilled'},
+  ]},
+  {code:'MED.1',title:'Medication Safety',criteria:[
+    {id:'p1_med1a',text:'Medications are labelled with drug name, dose, route, date, and patient ID'},
+    {id:'p1_med1b',text:'No expired medications or consumables are found in the ward'},
+    {id:'p1_med1c',text:'Controlled drugs are stored in a locked cabinet with shift count records'},
+  ]},
+  {code:'FMS.1',title:'Facility & Equipment Safety',criteria:[
+    {id:'p1_fms1a',text:'Emergency trolley / crash cart is present, complete, and checked daily (documented)'},
+    {id:'p1_fms1b',text:'Fire extinguisher is accessible, labelled, and within inspection date'},
+    {id:'p1_fms1c',text:'No electrical hazards observed (exposed wires, overloaded sockets, wet cables)'},
+  ]},
+  {code:'HR.1',title:'Staff Readiness',criteria:[
+    {id:'p1_hr1a',text:'All staff on duty wear proper ID and are in correct uniform'},
+    {id:'p1_hr1b',text:'Staff can demonstrate the ward emergency / evacuation procedure when asked'},
+  ]},
+  {code:'MR.1',title:'Documentation & Records',criteria:[
+    {id:'p1_mr1a',text:'Patient records are legible, dated, timed, and signed by the responsible clinician'},
+    {id:'p1_mr1b',text:'Discharge summaries are completed for discharged patients within the required timeframe'},
+  ]},
+];
+
+// ── PHASE 2: COMPREHENSIVE (full list, 13 standards) ──────────────
+const STANDARDS_P2 = [
+  {code:'PCC.1',title:'Patient Rights & Informed Consent',criteria:[
+    {id:'p2_pcc1a',text:'Patient rights are posted in visible locations and communicated to patients/families upon admission'},
+    {id:'p2_pcc1b',text:'Informed consent is documented before procedures, surgeries, or invasive interventions'},
+    {id:'p2_pcc1c',text:'Patient/family education is provided in a language and manner they understand'},
+    {id:'p2_pcc1d',text:'Patient complaints / grievance mechanism is in place and documented'},
+  ]},
+  {code:'PCC.2',title:'Patient Assessment & Care Planning',criteria:[
+    {id:'p2_pcc2a',text:'Initial patient assessment completed and documented within the required timeframe'},
+    {id:'p2_pcc2b',text:'Care plan is developed, individualized, and reviewed regularly'},
+    {id:'p2_pcc2c',text:'Reassessment performed at appropriate intervals and with changes in condition'},
+    {id:'p2_pcc2d',text:'Nutritional screening and dietary needs are assessed and documented'},
+  ]},
+  {code:'PCC.3',title:'Medication Management',criteria:[
+    {id:'p2_pcc3a',text:'Medications are prescribed, transcribed, dispensed, and administered using standard processes'},
+    {id:'p2_pcc3b',text:'High-alert medications are identified and managed with extra precautions'},
+    {id:'p2_pcc3c',text:'Medication reconciliation is conducted at admission, transfer, and discharge'},
+    {id:'p2_pcc3d',text:'Adverse drug reactions and medication errors are reported and documented'},
+  ]},
+  {code:'PCC.4',title:'Continuity of Care & Handover',criteria:[
+    {id:'p2_pcc4a',text:'Structured handover (SBAR or equivalent) used consistently at shift changes'},
+    {id:'p2_pcc4b',text:'Transfer documentation is complete and accompanies patients on inter-ward/facility transfers'},
+    {id:'p2_pcc4c',text:'Discharge planning begins at admission; discharge instructions provided to patient/family'},
+    {id:'p2_pcc4d',text:'Referral processes are documented and followed up'},
+  ]},
+  {code:'SQI.1',title:'Clinical Indicators & Quality Monitoring',criteria:[
+    {id:'p2_sqi1a',text:'Ward-specific clinical indicators tracked monthly (fall rate, HAI, mortality, etc.)'},
+    {id:'p2_sqi1b',text:'Data is analyzed and improvement actions documented (PDCA/PDSA cycle)'},
+    {id:'p2_sqi1c',text:'Sentinel events and near-misses reported and investigated within required timeframe'},
+    {id:'p2_sqi1d',text:'Quality improvement results communicated to ward staff'},
+  ]},
+  {code:'IPC.1',title:'Infection Prevention & Control',criteria:[
+    {id:'p2_ipc1a',text:'Hand hygiene compliance >=75% observed (WHO 5 Moments / 6 Steps)'},
+    {id:'p2_ipc1b',text:'Standard precautions (PPE, sharps, waste segregation) correctly practiced'},
+    {id:'p2_ipc1c',text:'Isolation precautions applied appropriately for infectious patients'},
+    {id:'p2_ipc1d',text:'Environmental cleaning schedules documented and followed'},
+    {id:'p2_ipc1e',text:'HAI surveillance data collected and reported to IPC committee'},
+  ]},
+  {code:'IPC.2',title:'Sterilization & Equipment Safety',criteria:[
+    {id:'p2_ipc2a',text:'Reusable equipment properly decontaminated, disinfected, or sterilized per protocol'},
+    {id:'p2_ipc2b',text:'Single-use items are not reused; expiry dates checked before use'},
+    {id:'p2_ipc2c',text:'Equipment maintenance records are available and current'},
+  ]},
+  {code:'HR.1',title:'Staff Competency & Training',criteria:[
+    {id:'p2_hr1a',text:'All clinical staff hold current credentials/licenses appropriate to their role'},
+    {id:'p2_hr1b',text:'New staff orientation completed with documented competency sign-off'},
+    {id:'p2_hr1c',text:'Annual in-service training completed (IPC, CPR/BLS, fire safety minimum)'},
+    {id:'p2_hr1d',text:'Staffing ratios meet minimum standards for patient safety'},
+  ]},
+  {code:'HR.2',title:'Performance & Supervision',criteria:[
+    {id:'p2_hr2a',text:'Staff performance appraisals conducted at least annually and filed'},
+    {id:'p2_hr2b',text:'Supervision and mentoring of junior/new staff is documented'},
+    {id:'p2_hr2c',text:'Staff incidents (needle-stick, exposure) reported and managed per protocol'},
+  ]},
+  {code:'FMS.1',title:'Facility Safety & Environment',criteria:[
+    {id:'p2_fms1a',text:'Fire safety plan in place; fire extinguishers accessible and inspected'},
+    {id:'p2_fms1b',text:'Emergency exits clearly marked, unobstructed, and known to staff'},
+    {id:'p2_fms1c',text:'Medical gas (oxygen) stored and used safely with appropriate signage'},
+    {id:'p2_fms1d',text:'No electrical hazards (exposed wires, overloaded sockets, trip hazards) observed'},
+  ]},
+  {code:'FMS.2',title:'Medical Equipment & Supplies',criteria:[
+    {id:'p2_fms2a',text:'Emergency equipment (crash cart, BVM) complete, checked, and documented daily'},
+    {id:'p2_fms2b',text:'Critical equipment (monitors, ventilators, pumps) calibrated and functional'},
+    {id:'p2_fms2c',text:'Adequate stock of essential medications and consumables maintained'},
+  ]},
+  {code:'MR.1',title:'Medical Records & Documentation',criteria:[
+    {id:'p2_mr1a',text:'Records are complete, legible, dated, timed, and signed by responsible clinician'},
+    {id:'p2_mr1b',text:'Vital signs, fluid balance, and nursing notes documented at required intervals'},
+    {id:'p2_mr1c',text:'Consent forms, operative notes (if applicable), and discharge summaries present'},
+    {id:'p2_mr1d',text:'Records stored securely with restricted access to authorized personnel only'},
+  ]},
+  {code:'MAT.1',title:'Medication Access & Traceability',criteria:[
+    {id:'p2_mat1a',text:'Controlled substances double-locked; counts verified and documented each shift'},
+    {id:'p2_mat1b',text:'Medication storage conditions (temperature, light) maintained and monitored'},
+    {id:'p2_mat1c',text:'Medication labels complete: drug name, dose, route, date, and patient ID'},
+  ]},
+];
+
+const WARD_OVERRIDES_P1 = {
+  'OPD':['PCC.1','PCC.2','IPC.1','MED.1','FMS.1','HR.1','MR.1'],
+};
+const WARD_OVERRIDES_P2 = {
+  'OPD':['PCC.1','PCC.2','PCC.3','PCC.4','IPC.1','HR.1','HR.2','FMS.1','MR.1','MAT.1'],
+  'Operation Theater':['PCC.1','PCC.2','PCC.3','PCC.4','IPC.1','IPC.2','HR.1','HR.2','FMS.1','FMS.2','MR.1','MAT.1'],
+};
+const WARDS=[
+  {name:'General Medicine',icon:'&#127805;'},
+  {name:'ICU',icon:'&#129728;'},
+  {name:'Pediatric',icon:'&#128118;'},
+  {name:'Operation Theater',icon:'&#128302;'},
+  {name:'Maternity',icon:'&#129330;'},
+  {name:'OPD',icon:'&#129514;'},
+];
+
+let currentPhase=1, currentWard=null, scores={}, allRecords=[];
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('assessmentDate').value=toDateStr(new Date());
+  renderWardGrid(); applyPhaseTheme();
+});
+
+function toDateStr(d){return d.toISOString().slice(0,10);}
+
+function switchPhase(p){
+  if(currentPhase===p)return;
+  currentPhase=p; currentWard=null; scores={};
+  applyPhaseTheme(); renderWardGrid();
+  document.getElementById('standardsArea').style.display='none';
+  document.getElementById('scoreBar').style.display='none';
+  document.getElementById('standardsList').innerHTML='';
+  document.getElementById('overallRemarks').value='';
+}
+
+function applyPhaseTheme(){
+  const isP1=currentPhase===1;
+  const color=isP1?'#1565C0':'#00695C';
+  document.documentElement.style.setProperty('--pc',color);
+  document.getElementById('appHeader').style.background=color;
+  document.getElementById('phaseBtn1').classList.toggle('active',isP1);
+  document.getElementById('phaseBtn2').classList.toggle('active',!isP1);
+  const stds=isP1?STANDARDS_P1:STANDARDS_P2;
+  const tc=stds.reduce((s,x)=>s+x.criteria.length,0);
+  document.getElementById('phaseInfo').textContent=tc+' measurable elements across '+stds.length+' standards';
+  document.getElementById('phaseBanner').style.borderLeftColor=color;
+  document.getElementById('phaseBannerIcon').textContent=isP1?'\u{1F331}':'\u{1F3C6}';
+  document.getElementById('phaseBannerTitle').textContent=isP1?'Phase 1 \u2014 Foundation Assessment':'Phase 2 \u2014 Comprehensive Assessment';
+  document.getElementById('phaseBannerTitle').style.color=color;
+  document.getElementById('phaseBannerDesc').textContent=isP1
+    ?'Focused on the most observable and measurable elements. Designed for first-round assessment comfort for both assessors and ward staff.'
+    :'Full comprehensive assessment across all CHAS standard domains. Used after wards are familiar with the process and Phase 1 gaps are addressed.';
+  document.getElementById('phaseCritCount').textContent=tc;
+  document.getElementById('phaseCritCount').style.color=color;
+}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  ['form','records','report'].forEach(n=>document.getElementById('nav-'+n).classList.toggle('active',n===p));
+  document.getElementById('page-'+p).classList.add('active');
+  if(p==='records')loadRecords();
+}
+
+function renderWardGrid(){
+  document.getElementById('wardGrid').innerHTML=WARDS.map(w=>
+    '<div class="ward-card'+(currentWard===w.name?' selected':'')+'" onclick="selectWard(\''+w.name+'\')">'
+    +'<div class="ward-icon">'+w.icon+'</div>'
+    +'<div class="ward-name">'+w.name+'</div></div>'
+  ).join('');
+}
+
+function selectWard(name){
+  currentWard=name; scores={};
+  renderWardGrid(); renderStandards();
+  document.getElementById('standardsArea').style.display='block';
+  document.getElementById('scoreBar').style.display='flex';
+  updateBar();
+  setTimeout(()=>document.getElementById('standardsList').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+function getStandards(){return currentPhase===1?STANDARDS_P1:STANDARDS_P2;}
+function getOverrides(){return currentPhase===1?WARD_OVERRIDES_P1:WARD_OVERRIDES_P2;}
+function getApplicableStandards(ward){
+  const stds=getStandards(),codes=getOverrides()[ward];
+  return codes?stds.filter(s=>codes.includes(s.code)):stds;
+}
+
+function renderStandards(){
+  const stds=getApplicableStandards(currentWard),p=currentPhase;
+  stds.forEach(s=>s.criteria.forEach(c=>{if(!scores[c.id])scores[c.id]={score:null,note:''}}));
+  document.getElementById('standardsList').innerHTML=stds.map((s,si)=>{
+    const rows=s.criteria.map(c=>{
+      const sc=scores[c.id].score;
+      return '<div class="crit-row" id="row_'+c.id+'">'
+        +'<div class="crit-text">'+c.text+'</div>'
+        +'<div class="crit-score"><div class="score-row">'
+        +'<button class="score-btn s0'+(sc===0?' active':'')+'" title="Non-compliant (0)" onclick="setScore(\''+c.id+'\',0)">0</button>'
+        +'<button class="score-btn s1'+(sc===1?' active':'')+'" title="Partial (1)" onclick="setScore(\''+c.id+'\',1)">1</button>'
+        +'<button class="score-btn s2'+(sc===2?' active':'')+'" title="Compliant (2)" onclick="setScore(\''+c.id+'\',2)">2</button>'
+        +'</div><div class="score-label" id="lbl_'+c.id+'">'+scoreLbl(sc)+'</div></div>'
+        +'<div class="crit-note"><textarea placeholder="Evidence / observation\u2026" id="note_'+c.id+'" onchange="scores[\''+c.id+'\'].note=this.value">'+scores[c.id].note+'</textarea></div>'
+        +'</div>';
+    }).join('');
+    return '<div class="std-section" id="std_'+si+'">'
+      +'<div class="std-header" onclick="toggleStd('+si+')">'
+      +'<span class="std-code p'+p+'">'+s.code+'</span>'
+      +'<span class="std-title">'+s.title+'</span>'
+      +'<span class="std-progress" id="stdprog_'+si+'">\u2014</span>'
+      +'<span style="color:var(--text-muted);font-size:12px;margin-left:6px">\u25BE</span>'
+      +'</div>'
+      +'<div class="col-header p'+p+'"><span>Criteria</span><span style="text-align:center">Score (0\u20132)</span><span>Observations / Evidence</span></div>'
+      +'<div class="std-body" id="stdbody_'+si+'">'+rows+'</div>'
+      +'</div>';
+  }).join('');
+  updateBar(); updateStdProgress();
+}
+
+function scoreLbl(sc){return sc===null?'Not scored':sc===0?'Non-compliant':sc===1?'Partial':'Compliant';}
+
+function toggleStd(i){
+  const b=document.getElementById('stdbody_'+i);
+  b.classList.toggle('collapsed');
+  const a=document.querySelector('#std_'+i+' .std-header span:last-child');
+  if(a)a.textContent=b.classList.contains('collapsed')?'\u25B8':'\u25BE';
+}
+
+function setScore(cid,val){
+  scores[cid]=scores[cid]||{score:null,note:''};
+  scores[cid].score=(scores[cid].score===val)?null:val;
+  const row=document.getElementById('row_'+cid);
+  if(!row)return;
+  row.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('active'));
+  const sc=scores[cid].score;
+  if(sc!==null)row.querySelectorAll('.score-btn')[sc].classList.add('active');
+  document.getElementById('lbl_'+cid).textContent=scoreLbl(sc);
+  updateBar(); updateStdProgress();
+}
+
+function updateStdProgress(){
+  getApplicableStandards(currentWard).forEach((s,si)=>{
+    let t=0,m=0;
+    s.criteria.forEach(c=>{const sc=scores[c.id]&&scores[c.id].score;if(sc!=null){t+=sc;m+=2;}});
+    const el=document.getElementById('stdprog_'+si);
+    if(el)el.textContent=m>0?t+'/'+m+' ('+Math.round(t/m*100)+'%)':'\u2014';
+  });
+}
+
+function updateBar(){
+  if(!currentWard)return;
+  const stds=getApplicableStandards(currentWard);
+  let total=0,max=0,scored=0,all=0;
+  stds.forEach(s=>s.criteria.forEach(c=>{
+    all++;const sc=scores[c.id]&&scores[c.id].score;
+    if(sc!=null){total+=sc;max+=2;scored++;}
+  }));
+  const pct=max>0?Math.round(total/max*100):0;
+  document.getElementById('barScore').textContent=total+'/'+max;
+  document.getElementById('barPct').textContent=max>0?pct+'%':'\u2014';
+  const gb=document.getElementById('barGrade'),g=getGrade(pct);
+  gb.textContent=max>0?g:'\u2014';
+  gb.className='grade-badge'+(max>0?' grade-'+g:'');
+  const prog=all>0?Math.round(scored/all*100):0;
+  document.getElementById('barProg').style.width=prog+'%';
+  document.getElementById('barProg').style.background=prog<40?'#E53935':prog<80?'#FB8C00':'#43A047';
+  document.getElementById('barProgTxt').textContent=scored+' of '+all+' criteria scored';
+}
+
+function getGrade(pct){return pct>=90?'A':pct>=75?'B':pct>=60?'C':'D';}
+
+async function submitAssessment(){
+  const dateVal=document.getElementById('assessmentDate').value;
+  const assessorName=document.getElementById('assessorName').value;
+  const assessorRole=document.getElementById('assessorRole').value;
+  const remarks=document.getElementById('overallRemarks').value;
+  if(!dateVal){toast('Please select an assessment date.','error');return;}
+  if(!assessorName){toast('Please select the assessor name.','error');return;}
+  if(!currentWard){toast('Please select a ward.','error');return;}
+  const stds=getApplicableStandards(currentWard);
+  const scoresArr=[];
+  stds.forEach(s=>s.criteria.forEach(c=>{
+    scoresArr.push({standardCode:s.code,standardTitle:s.title,criteriaId:c.id,criteriaText:c.text,
+      score:(scores[c.id]&&scores[c.id].score!=null)?scores[c.id].score:null,
+      note:(scores[c.id]&&scores[c.id].note)||''});
+  }));
+  const btn=document.getElementById('btnSubmit');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Saving\u2026';
+  try{
+    await fetch(GAS_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({
+      action:'saveAssessment',phase:'Phase '+currentPhase,
+      ward:currentWard,assessorName,assessorRole,
+      assessmentDate:dateVal,overallRemarks:remarks,scores:scoresArr
+    })});
+    toast('Assessment saved successfully! \u{1F389}','success');
+    clearForm();
+  }catch(err){toast('Error: '+err.message,'error');}
+  finally{btn.disabled=false;btn.innerHTML='\u{1F4BE} Save Assessment';}
+}
+
+function clearForm(){
+  currentWard=null;scores={};
+  document.getElementById('assessmentDate').value=toDateStr(new Date());
+  document.getElementById('assessorName').value='';
+  document.getElementById('assessorRole').value='';
+  document.getElementById('overallRemarks').value='';
+  document.getElementById('standardsArea').style.display='none';
+  document.getElementById('scoreBar').style.display='none';
+  document.getElementById('standardsList').innerHTML='';
+  renderWardGrid();
+}
+
+async function loadRecords(){
+  const el=document.getElementById('recordsTable');
+  el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">Loading\u2026</div>';
+  try{
+    const res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'getAssessments'})});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message);
+    allRecords=data.assessments||[];filterRecords();
+  }catch(err){el.innerHTML='<div style="padding:20px;color:var(--red)">Error: '+err.message+'</div>';}
+}
+
+function filterRecords(){
+  const phase=document.getElementById('filterPhase').value;
+  const ward=document.getElementById('filterWard').value;
+  const search=(document.getElementById('filterSearch').value||'').toLowerCase();
+  const rows=allRecords.filter(r=>{
+    if(phase&&r['Phase']!==phase)return false;
+    if(ward&&r['Ward']!==ward)return false;
+    if(search&&!((r['Assessment ID']||'').toLowerCase().includes(search)||(r['Assessor Name']||'').toLowerCase().includes(search)))return false;
+    return true;
+  });
+  renderRecordsTable(rows);
+}
+
+function renderRecordsTable(rows){
+  const el=document.getElementById('recordsTable');
+  if(!rows.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">No records found.</div>';return;}
+  let html='<table class="records-table"><thead><tr><th>ID</th><th>Phase</th><th>Ward</th><th>Assessor</th><th>Date</th><th>Score</th><th>%</th><th>Grade</th><th class="no-print">Actions</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const grade=r['Grade']||'',phase=r['Phase']||'',isP1=phase.includes('1');
+    html+='<tr>'
+      +'<td style="font-size:11px;color:var(--text-muted)">'+(r['Assessment ID']||'')+'</td>'
+      +'<td><span class="badge '+(isP1?'badge-p1':'badge-p2')+'">'+phase+'</span></td>'
+      +'<td><span class="badge badge-ward">'+(r['Ward']||'')+'</span></td>'
+      +'<td>'+(r['Assessor Name']||'')+'</td>'
+      +'<td>'+(r['Assessment Date']||'')+'</td>'
+      +'<td style="font-weight:600">'+(r['Total Score']||0)+'/'+(r['Max Score']||0)+'</td>'
+      +'<td>'+(r['Percentage']||0)+'%</td>'
+      +'<td><span class="badge badge-'+grade+'">'+grade+'</span></td>'
+      +'<td class="no-print" style="white-space:nowrap">'
+      +'<button class="btn btn-primary btn-sm" onclick="viewReport(\''+r['Assessment ID']+'\')">\u{1F4CA} Report</button> '
+      +'<button class="btn btn-outline btn-sm" onclick="deleteRecord(\''+r['Assessment ID']+'\')">\u{1F5D1}</button>'
+      +'</td></tr>';
+  });
+  html+='</tbody></table>';
+  el.innerHTML=html;
+}
+
+async function deleteRecord(id){
+  if(!confirm('Delete assessment '+id+'? This cannot be undone.'))return;
+  try{
+    await fetch(GAS_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'deleteAssessment',id})});
+    toast('Deleted '+id,'success');loadRecords();
+  }catch(err){toast('Error: '+err.message,'error');}
+}
+
+async function viewReport(id){
+  toast('Generating report\u2026');
+  try{
+    const res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'getAssessment',id})});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message);
+    generateReport(data.assessment,data.criteria);showPage('report');
+  }catch(err){toast('Error: '+err.message,'error');}
+}
+
+function generateReport(assessment,criteria){
+  const ward=assessment['Ward']||'',assessor=assessment['Assessor Name']||'';
+  const role=assessment['Assessor Role']||'',date=assessment['Assessment Date']||'';
+  const submitted=assessment['Submitted At']||'',total=Number(assessment['Total Score'])||0;
+  const max=Number(assessment['Max Score'])||0,pct=Number(assessment['Percentage'])||0;
+  const grade=assessment['Grade']||'\u2014',remarks=assessment['Overall Remarks']||'\u2014';
+  const id=assessment['Assessment ID']||'',phase=assessment['Phase']||'';
+  const isP1=phase.includes('1'),pc=isP1?'#1565C0':'#00695C';
+  const covCls=isP1?'rpt-cover-p1':'rpt-cover-p2';
+  const secCls=isP1?'rpt-section-p1':'rpt-section-p2';
+  const tblCls=isP1?'rpt-std-table-p1':'rpt-std-table-p2';
+  const gradeColors={A:'#1B5E20',B:'#0D47A1',C:'#E65100',D:'#B71C1C'};
+  const gradeBg={A:'#C8E6C9',B:'#BBDEFB',C:'#FFF9C4',D:'#FFCDD2'};
+  const stdMap={};
+  criteria.forEach(c=>{const code=c['Standard Code'];if(!stdMap[code])stdMap[code]={title:c['Standard Title'],rows:[]};stdMap[code].rows.push(c);});
+  const stdSummary=Object.entries(stdMap).map(([code,obj])=>{
+    let t=0,m=0;
+    obj.rows.forEach(r=>{const sv=Number(r['Score']);if(!isNaN(sv)&&r['Score']!==''){t+=sv;m+=2;}});
+    return {code,title:obj.title,total:t,max:m,pct:m>0?Math.round(t/m*100):0,rows:obj.rows};
+  });
+  const findings=criteria.filter(c=>{const sv=Number(c['Score']);return !isNaN(sv)&&c['Score']!==''&&sv<=1;});
+  const bc=pct>=90?'#43A047':pct>=75?pc:pct>=60?'#FB8C00':'#E53935';
+  const phaseLabel=isP1?'Phase 1 \u2014 Foundation Assessment':'Phase 2 \u2014 Comprehensive Assessment';
+  let html=
+    '<div class="rpt-cover '+covCls+'">'
+      +'<div class="rpt-phase-tag">'+phase+' &nbsp;&middot;&nbsp; '+(isP1?'Foundation':'Comprehensive')+' Assessment</div>'
+      +'<div class="hosp-name">Kampong Chhnang Provincial Hospital</div>'
+      +'<h1>CHAS Ward Compliance Assessment Report</h1>'
+      +'<div class="rpt-sub">'+ward+' Ward &nbsp;&middot;&nbsp; ID: '+id+' &nbsp;&middot;&nbsp; Date: '+date+'</div>'
+    +'</div>'
+    +'<div class="rpt-meta">'
+      +'<div class="rpt-meta-cell"><div class="mk">Assessed Ward</div><div class="mv">'+ward+'</div></div>'
+      +'<div class="rpt-meta-cell"><div class="mk">Assessment Phase</div><div class="mv">'+phase+'</div></div>'
+      +'<div class="rpt-meta-cell"><div class="mk">Assessor</div><div class="mv">'+assessor+'</div></div>'
+      +'<div class="rpt-meta-cell"><div class="mk">Role</div><div class="mv">'+role+'</div></div>'
+      +'<div class="rpt-meta-cell"><div class="mk">Assessment Date</div><div class="mv">'+date+'</div></div>'
+      +'<div class="rpt-meta-cell"><div class="mk">Submitted At</div><div class="mv">'+submitted+'</div></div>'
+    +'</div>'
+    +'<div class="rpt-section '+secCls+'">'
+      +'<h2>Overall Score Summary</h2>'
+      +'<div class="summary-scores">'
+        +'<div class="sum-card"><div class="sc-val" style="color:'+pc+'">'+total+'</div><div class="sc-pct">out of '+max+'</div><div class="sc-label">Total Score</div></div>'
+        +'<div class="sum-card"><div class="sc-val" style="color:'+pc+'">'+pct+'%</div><div class="sc-label">Compliance Rate</div><div class="pct-bar-wrap"><div class="pct-bar-fill" style="width:'+pct+'%;background:'+bc+'"></div></div></div>'
+        +'<div class="sum-card"><div class="grade-display" style="color:'+(gradeColors[grade]||'#263238')+';background:'+(gradeBg[grade]||'#F5F5F5')+';border-radius:8px">'+grade+'</div><div class="sc-label">Performance Grade</div></div>'
+        +'<div class="sum-card"><div class="sc-val" style="color:'+pc+'">'+stdSummary.length+'</div><div class="sc-label">Standards Assessed</div></div>'
+      +'</div>'
+      +'<div style="background:#F8F9FA;border-left:4px solid '+pc+';border-radius:0 8px 8px 0;padding:10px 15px;font-size:13px;color:'+pc+';font-weight:600">'
+        +'Grade '+grade+' \u2014 '+(grade==='A'?'Excellent: Ward demonstrates consistent full compliance across all standards.':grade==='B'?'Good: Ward demonstrates strong compliance with minor gaps requiring attention.':grade==='C'?'Acceptable: Ward shows partial compliance; targeted improvement plan required.':'Needs Improvement: Significant gaps identified; urgent corrective action required.')
+      +'</div>'
+    +'</div>'
+    +'<div class="rpt-section '+secCls+'">'
+      +'<h2>Standards Performance Summary</h2>'
+      +'<table class="rpt-std-table '+tblCls+'"><thead><tr><th style="width:75px">Code</th><th>Standard</th><th style="width:75px">Score</th><th style="width:55px">%</th><th style="width:90px">Compliance</th></tr></thead><tbody>'
+      +stdSummary.map(s=>'<tr>'
+        +'<td style="font-weight:700;color:'+pc+'">'+s.code+'</td><td>'+s.title+'</td>'
+        +'<td>'+s.total+'/'+s.max+'</td>'
+        +'<td><div>'+s.pct+'%</div><div class="pct-bar-wrap"><div class="pct-bar-fill" style="width:'+s.pct+'%;background:'+(s.pct>=90?'#43A047':s.pct>=75?pc:s.pct>=60?'#FB8C00':'#E53935')+'"></div></div></td>'
+        +'<td><span class="score-pill '+(s.pct>=90?'pill-2':s.pct>=60?'pill-1':'pill-0')+'">'+(s.pct>=90?'Compliant':s.pct>=60?'Partial':'Non-compliant')+'</span></td>'
+        +'</tr>').join('')
+      +'</tbody></table>'
+    +'</div>'
+    +'<div class="rpt-section '+secCls+' page-break">'
+      +'<h2>Detailed Criteria Scores</h2>'
+      +stdSummary.map(s=>'<div style="margin-bottom:16px">'
+        +'<div style="background:'+(isP1?'#E8EAF6':'#E0F2F1')+';padding:7px 12px;border-radius:6px;margin-bottom:5px;display:flex;align-items:center;gap:8px">'
+          +'<span style="background:'+pc+';color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">'+s.code+'</span>'
+          +'<span style="font-size:13px;font-weight:600;color:'+pc+'">'+s.title+'</span>'
+          +'<span style="margin-left:auto;font-size:12px;font-weight:600;color:'+pc+'">'+s.total+'/'+s.max+' ('+s.pct+'%)</span>'
+        +'</div>'
+        +'<table class="rpt-std-table '+tblCls+'"><thead><tr><th>Criteria</th><th style="width:100px;text-align:center">Score</th><th>Observation / Evidence</th></tr></thead><tbody>'
+        +s.rows.map(c=>{
+          const sv=c['Score'],lbl=(sv===''||sv==null)?'Not scored':Number(sv)===0?'Non-compliant':Number(sv)===1?'Partial':'Compliant';
+          const pill=(sv===''||sv==null)?'pill-na':Number(sv)===0?'pill-0':Number(sv)===1?'pill-1':'pill-2';
+          return '<tr><td>'+(c['Criteria Text']||'')+'</td>'
+            +'<td style="text-align:center"><span class="score-pill '+pill+'">'+(sv!=null&&sv!==''?sv:'\u2014')+' '+lbl+'</span></td>'
+            +'<td style="font-style:italic;color:var(--text-muted)">'+(c['Note']||'')+'</td></tr>';
+        }).join('')
+        +'</tbody></table></div>'
+      ).join('')
+    +'</div>'
+    +(findings.length?
+      '<div class="rpt-section '+secCls+'">'
+        +'<h2>Findings Requiring Corrective Action</h2>'
+        +findings.map(c=>'<div class="findings-box'+(Number(c['Score'])===0?' critical':'')+'"><h4>'
+          +(Number(c['Score'])===0?'\u274C Non-compliant':'\u26A0\uFE0F Partial Compliance')+' \u2014 '+(c['Standard Code']||'')+': '+(c['Standard Title']||'')+'</h4>'
+          +'<div>'+(c['Criteria Text']||'')+'</div>'
+          +(c['Note']?'<div style="margin-top:4px;color:#5D4037"><strong>Observation:</strong> '+c['Note']+'</div>':'')
+          +'</div>').join('')
+      +'</div>':''
+    )
+    +'<div class="rpt-section '+secCls+'">'
+      +'<h2>Overall Remarks</h2>'
+      +'<p style="font-size:13px;line-height:1.75">'+remarks+'</p>'
+    +'</div>'
+    +'<div class="rpt-footer">'
+      +'<div class="sig-block"><div class="sig-role">Assessor</div><div class="sig-line"></div><div class="sig-name">'+assessor+'</div><div class="sig-title">'+role+'</div></div>'
+      +'<div class="sig-block"><div class="sig-role">Committee Chair</div><div class="sig-line"></div><div class="sig-name">Dr. Vorn Theavy</div><div class="sig-title">Chair, Finance Committee</div></div>'
+      +'<div class="sig-block"><div class="sig-role">Vice Chairman</div><div class="sig-line"></div><div class="sig-name">Dr. Khon Oudomvichet</div><div class="sig-title">Vice Chairman, Finance Committee</div></div>'
+      +'<div class="sig-block"><div class="sig-role">Director</div><div class="sig-line"></div><div class="sig-name">Dr. Tum Sambath</div><div class="sig-title">Director, KCPH</div></div>'
+    +'</div>';
+  document.getElementById('reportOutput').innerHTML=html;
+}
+
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show'+(type?' '+type:'');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.className='',3200);
+}
+</script>
+</body>
+</html>
